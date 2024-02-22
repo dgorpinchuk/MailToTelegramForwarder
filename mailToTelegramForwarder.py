@@ -32,6 +32,8 @@ try:
     import email
     from email.header import Header, decode_header, make_header
     from enum import Enum
+    from typing import List
+    from typing import Union
 except ImportError as import_error:
     logging.critical(import_error.__class__.__name__ + ": " + import_error.args[0])
     sys.exit(2)
@@ -64,7 +66,7 @@ with warnings.catch_warnings(record=True) as w:
 
 
 class Tool:
-    mask_error_data: [str] = []
+    mask_error_data: List[str] = []
 
     def decode_mail_data(self, value) -> str:
         result = ''
@@ -110,7 +112,7 @@ class Tool:
     def build_error_message(self, message) -> str:
         error_message: str
         if type(message) is list:
-            lines: [str] = []
+            lines: List[str] = []
             for item in message:
                 lines.append(self._convert_error_message(item))
             error_message = "; ".join(lines)
@@ -440,7 +442,7 @@ class TelegramBot:
 
         return tg_msg
 
-    def send_message(self, mails: [MailData]):
+    def send_message(self, mails: List[MailData]):
         """
         Send mail data over Telegram API to chat/user.
         """
@@ -482,7 +484,7 @@ class TelegramBot:
                                     caption=title,
                                     photo=image.file,
                                 )
-                                photo_size: [telegram.PhotoSize] = doc_message.photo
+                                photo_size: List[telegram.PhotoSize] = doc_message.photo
                                 image.tg_id = photo_size[0].file_id
 
                             message = message.replace(
@@ -668,7 +670,7 @@ class Mail:
         """
         html_part = None
         text_part = None
-        attachments: [MailAttachment] = []
+        attachments: List[MailAttachment] = []
         images: dict[str, MailAttachment] = {}
         index: int = 1
 
@@ -747,7 +749,7 @@ class Mail:
             num = 1 
         return num
 
-    def parse_mail(self, uid, mail) -> (MailData, None):
+    def parse_mail(self, uid, mail) -> Union[MailData, None]:
         """
         parse data from mail like subject, body and attachments and return structured mail data
         """
@@ -887,7 +889,7 @@ class Mail:
                 logging.critical("Cannot parse mail: %s" % parse_error.__str__())
             return None
 
-    def search_mails(self) -> [MailData]:
+    def search_mails(self) -> List[MailData]:
         """
         Search mail on remote IMAP server and return list of parsed mails.
         """

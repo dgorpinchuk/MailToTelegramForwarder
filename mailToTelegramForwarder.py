@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.9
 """
         Fetch mails from IMAP server and forward them to Telegram Chat.
         Copyright (C) 2021  Awalon (https://github.com/awalon)
@@ -736,11 +736,16 @@ class Mail:
         """
         get UID of most recent mail
         """
-        rv, data = self.mailbox.uid('search', '', 'UID *')
+        rv, data = self.mailbox.select(self.config.imap_folder)
+        rv, data = self.mailbox.uid('SEARCH', None, 'UNSEEN')
         if rv != 'OK':
             logging.info("No messages found!")
             return ''
-        return self.config.tool.binary_to_string(data[0])
+        try:
+            num = Tool.binary_to_string(data[0].split()[0])
+        except:
+            num = 1 
+        return num
 
     def parse_mail(self, uid, mail) -> (MailData, None):
         """
@@ -850,7 +855,7 @@ class Mail:
 
             if message_type == MailDataType.HTML:
                 mail_from = html.escape(mail_from, quote=True)
-                email_text = "<b>From:</b> " + mail_from + "\n<b>Subject:</b> "
+                email_text = "<code>Новое письмо</code> olimp@iproficlub.ru" + "\n\n<b>От:</b> " + mail_from + "\n<b>Тема:</b> "
             else:
                 subject = telegram.utils.helpers.escape_markdown(text=subject,
                                                                  version=self.config.tg_markdown_version)
@@ -858,7 +863,7 @@ class Mail:
                                                                    version=self.config.tg_markdown_version)
                 summary_line = telegram.utils.helpers.escape_markdown(text=summary_line,
                                                                       version=self.config.tg_markdown_version)
-                email_text = "*From:* " + mail_from + "\n*Subject:* "
+                email_text = "*От:* " + mail_from + "\n*Тема:* "
             email_text += subject + summary_line + content + " " + attachments_summary
 
             mail_data = MailData()
@@ -902,7 +907,8 @@ class Mail:
             return
 
         try:
-            rv, data = self.mailbox.uid('search', '', search_string)
+            rv, data = self.mailbox.select(self.config.imap_folder)
+            rv, data = self.mailbox.uid('search', None, search_string)
             if rv != 'OK':
                 logging.info("No messages found!")
                 return
@@ -940,6 +946,7 @@ class Mail:
             current_uid = self.config.tool.binary_to_string(cur_uid)
 
             try:
+                rv, data = self.mailbox.select(self.config.imap_folder)
                 rv, data = self.mailbox.uid('fetch', cur_uid, '(RFC822)')
                 if rv != 'OK':
                     logging.error("ERROR getting message: %s" % current_uid)
@@ -1103,3 +1110,4 @@ def main():
 
 
 main()
+

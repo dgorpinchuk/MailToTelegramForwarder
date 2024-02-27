@@ -32,8 +32,6 @@ try:
     import email
     from email.header import Header, decode_header, make_header
     from enum import Enum
-    from typing import List
-    from typing import Union
 except ImportError as import_error:
     logging.critical(import_error.__class__.__name__ + ": " + import_error.args[0])
     sys.exit(2)
@@ -66,7 +64,7 @@ with warnings.catch_warnings(record=True) as w:
 
 
 class Tool:
-    mask_error_data: List[str] = []
+    mask_error_data: [str] = []
 
     def decode_mail_data(self, value) -> str:
         result = ''
@@ -112,7 +110,7 @@ class Tool:
     def build_error_message(self, message) -> str:
         error_message: str
         if type(message) is list:
-            lines: List[str] = []
+            lines: [str] = []
             for item in message:
                 lines.append(self._convert_error_message(item))
             error_message = "; ".join(lines)
@@ -442,7 +440,7 @@ class TelegramBot:
 
         return tg_msg
 
-    def send_message(self, mails: List[MailData]):
+    def send_message(self, mails: [MailData]):
         """
         Send mail data over Telegram API to chat/user.
         """
@@ -484,12 +482,12 @@ class TelegramBot:
                                     caption=title,
                                     photo=image.file,
                                 )
-                                photo_size: List[telegram.PhotoSize] = doc_message.photo
+                                photo_size: [telegram.PhotoSize] = doc_message.photo
                                 image.tg_id = photo_size[0].file_id
 
                             message = message.replace(
                                 '${file:%s}' % image.id,
-                                '🖼 %s' % title
+                                '🏞️ %s' % title
                             )
                             image_no += 1
 
@@ -500,7 +498,7 @@ class TelegramBot:
                             alt = img_link.group('alt')
                             message = message.replace(
                                 img_link.groups()[0],
-                                '<a href="%s">🖼 %s</a>' % (src, alt)
+                                '<a href="%s">🏞️ %s</a>' % (src, alt)
                             )
 
                         tg_message = bot.send_message(chat_id=self.config.tg_forward_to_chat_id,
@@ -508,7 +506,7 @@ class TelegramBot:
                                                       text=message,
                                                       disable_web_page_preview=False)
 
-                        logging.info("Mail summary for '%s' (UID: '%s') was sent"
+                        logging.info("✅ Mail summary for '%s' (UID: '%s') was sent"
                                      " with message ID '%i' to '%s' (ID: '%i')"
                                      % (mail.mail_subject, mail.uid, tg_message.message_id,
                                         tg_chat_title, self.config.tg_forward_to_chat_id))
@@ -531,7 +529,7 @@ class TelegramBot:
                                                            filename=attachment.name,
                                                            disable_content_type_detection=False)
 
-                            logging.info("Attachment '%s' was sent with ID '%i' to '%s' (ID: '%s')"
+                            logging.info("✅ Attachment '%s' was sent with ID '%i' to '%s' (ID: '%s')"
                                          % (attachment.name, tg_message.message_id,
                                             tg_chat_title, str(self.config.tg_forward_to_chat_id)))
 
@@ -550,7 +548,7 @@ class TelegramBot:
 
                 except Exception as send_mail_error:
                     error_msgs = [self.config.tool.binary_to_string(arg) for arg in send_mail_error.args]
-                    msg = "Failed to send Telegram message (UID: %s) to '%s': %s" \
+                    msg = "❌ Failed to send Telegram message (UID: %s) to '%s': %s" \
                           % (mail.uid, str(self.config.tg_forward_to_chat_id), ', '.join(error_msgs))
                     logging.critical(msg)
                     try:
@@ -563,12 +561,12 @@ class TelegramBot:
                         pass
 
         except telegram.TelegramError as tg_error:
-            logging.critical("Failed to send Telegram message: %s" % tg_error.message)
+            logging.critical("❌ Failed to send Telegram message: %s" % tg_error.message)
             return False
 
         except Exception as send_error:
             error_msgs = [self.config.tool.binary_to_string(arg) for arg in send_error.args]
-            logging.critical("Failed to send Telegram message: %s" % ', '.join(error_msgs))
+            logging.critical("❌ Failed to send Telegram message: %s" % ', '.join(error_msgs))
             return False
 
         return True
@@ -670,7 +668,7 @@ class Mail:
         """
         html_part = None
         text_part = None
-        attachments: List[MailAttachment] = []
+        attachments: [MailAttachment] = []
         images: dict[str, MailAttachment] = {}
         index: int = 1
 
@@ -749,7 +747,7 @@ class Mail:
             num = 1 
         return num
 
-    def parse_mail(self, uid, mail) -> Union[MailData, None]:
+    def parse_mail(self, uid, mail) -> (MailData, None):
         """
         parse data from mail like subject, body and attachments and return structured mail data
         """
@@ -851,13 +849,13 @@ class Mail:
             mail_from = self.config.tool.decode_mail_data(msg['From'])
 
             if self.config.tg_forward_mail_content:
-                summary_line = "\n=============================\n"
+                summary_line = "\n🔸🔸🔸\n"
             else:
                 summary_line = "\n"
 
             if message_type == MailDataType.HTML:
                 mail_from = html.escape(mail_from, quote=True)
-                email_text = "<code>Новое письмо</code> olimp@iproficlub.ru" + "\n\n<b>От:</b> " + mail_from + "\n<b>Тема:</b> "
+                email_text = "✉️  <code>Новое письмо</code> olimp@iproficlub.ru" + "\n\n<b>От:</b> " + mail_from + "\n<b>Тема:</b> "
             else:
                 subject = telegram.utils.helpers.escape_markdown(text=subject,
                                                                  version=self.config.tg_markdown_version)
@@ -889,7 +887,7 @@ class Mail:
                 logging.critical("Cannot parse mail: %s" % parse_error.__str__())
             return None
 
-    def search_mails(self) -> List[MailData]:
+    def search_mails(self) -> [MailData]:
         """
         Search mail on remote IMAP server and return list of parsed mails.
         """

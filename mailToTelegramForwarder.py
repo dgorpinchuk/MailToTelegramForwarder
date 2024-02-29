@@ -855,7 +855,7 @@ class Mail:
 
             if message_type == MailDataType.HTML:
                 mail_from = html.escape(mail_from, quote=True)
-                email_text = "✉️ <code>Новое письмо</code> olimp@iproficlub.ru" + "<b>От:</b> " + mail_from + "\n<b>Тема:</b> "
+                email_text = "✉️ <code>Новое письмо</code> olimp@iproficlub.ru\n" + "<b>От:</b> " + mail_from + "\n<b>Тема:</b> "
             else:
                 subject = telegram.utils.helpers.escape_markdown(text=subject,
                                                                  version=self.config.tg_markdown_version)
@@ -863,7 +863,7 @@ class Mail:
                                                                    version=self.config.tg_markdown_version)
                 summary_line = telegram.utils.helpers.escape_markdown(text=summary_line,
                                                                       version=self.config.tg_markdown_version)
-                email_text = "*От:* " + mail_from + "\n*Тема:* "
+                email_text = "✉️ <code>Новое письмо</code> olimp@iproficlub.ru\n" + "*От:* " + mail_from + "\n*Тема:* "
             email_text += subject + summary_line + content + " " + attachments_summary
 
             mail_data = MailData()

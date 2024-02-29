@@ -849,7 +849,7 @@ class Mail:
             mail_from = self.config.tool.decode_mail_data(msg['From'])
 
             if self.config.tg_forward_mail_content:
-                summary_line = "\n🔸🔸🔸\n"
+                summary_line = "\n\n🔸🔸🔸\n\n"
             else:
                 summary_line = "\n"
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.9
+#!/usr/bin/env python3
 """
         Fetch mails from IMAP server and forward them to Telegram Chat.
         Copyright (C) 2021  Awalon (https://github.com/awalon)
@@ -823,17 +823,17 @@ class Mail:
                         else:
                             # remove last "\"
                             content = re.sub(r'\\*$', '', content)
-                        content += "... (first " + str(max_len) + " characters)"
+                        content += "... <i>(следующие </i>" + str(max_len) + "<i> символов)</i>"
 
             # attachment summary
             attachments_summary = ""
             if body.attachments:
                 if message_type == MailDataType.HTML:
-                    attachments_summary = "\n\n" + chr(10133) + \
-                                          " <b>" + str(len(body.attachments)) + " attachments:</b>\n"
+                    attachments_summary = "\n\n" + chr(128206) + \
+                                          " <b>" + str(len(body.attachments)) + " вложения:</b>\n"
                 else:
-                    attachments_summary = "\n\n" + chr(10133) + \
-                                          " **" + str(len(body.attachments)) + " attachments:**\n"
+                    attachments_summary = "\n\n" + chr(128206) + \
+                                          " **" + str(len(body.attachments)) + " вложения:**\n"
                 for attachment in body.attachments:
                     if message_type == MailDataType.HTML:
                         file_name = attachment.name
@@ -855,7 +855,7 @@ class Mail:
 
             if message_type == MailDataType.HTML:
                 mail_from = html.escape(mail_from, quote=True)
-                email_text = "✉️  <code>Новое письмо</code> olimp@iproficlub.ru" + "\n\n<b>От:</b> " + mail_from + "\n<b>Тема:</b> "
+                email_text = "✉️ <code>Новое письмо</code> olimp@iproficlub.ru" + "<b>От:</b> " + mail_from + "\n<b>Тема:</b> "
             else:
                 subject = telegram.utils.helpers.escape_markdown(text=subject,
                                                                  version=self.config.tg_markdown_version)
@@ -1110,4 +1110,3 @@ def main():
 
 
 main()
-

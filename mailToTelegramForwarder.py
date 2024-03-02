@@ -843,10 +843,10 @@ class Mail:
                     attachments_summary += "\n " + str(attachment.idx) + ": " + file_name
 
             # subject
-            subject = self.config.tool.decode_mail_data(msg['Subject', '']) # убрать , ''
+            subject = self.config.tool.decode_mail_data(msg['Subject'])
 
             # build summary
-            mail_from = self.config.tool.decode_mail_data(msg['From', '']) # убрать , ''
+            mail_from = self.config.tool.decode_mail_data(msg['From'])
 
             if self.config.tg_forward_mail_content:
                 summary_line = "\n\n🔸🔸🔸\n\n"
